@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#05070a" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4 58 18v28L32 60 6 46V18Z' fill='%23070a0d' stroke='%23f2ae55'/%3E%3Cpath d='M22 40 32 22l10 18Z' fill='%23f2ae55'/%3E%3C/svg%3E" />
+<title>BLACKSITE // NIGHTFALL</title>
+<link rel="stylesheet" href="css/style.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <canvas id="game-canvas" aria-label="Game viewport"></canvas>
+
+  <div id="loading" class="screen loading-screen">
+    <div class="load-mark">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4 58 18v28L32 60 6 46V18Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M32 14 49 23v18L32 50 15 41V23Z" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/><path d="M22 40 32 22l10 18Z" fill="currentColor" opacity=".85"/></svg>
+    </div>
+    <div class="load-title">BLACKSITE</div>
+    <div class="load-sub">INITIALIZING OPERATION NIGHTFALL</div>
+    <div class="load-track"><div id="load-fill"></div></div>
+    <div id="load-status" class="load-status">ESTABLISHING SECURE UPLINK…</div>
+  </div>
+
+  <div id="menu" class="screen menu-screen hidden">
+    <div class="menu-grid" aria-hidden="true"></div>
+    <div class="menu-top">
+      <div class="brand">
+        <span class="brand-mark">▲</span>
+        <span>VANGUARD COMMAND</span>
+        <span class="brand-sep">/</span>
+        <span class="dim">SIGINT DIVISION</span>
+      </div>
+      <div class="menu-top-right">
+        <span class="live-dot"></span>
+        <span>ENCRYPTED CHANNEL 7</span>
+      </div>
+    </div>
+
+    <main class="menu-main">
+      <div class="eyebrow"><span class="rule"></span>CLASSIFIED // EYES ONLY<span class="rule"></span></div>
+      <h1 class="title">BLACK<span>SITE</span></h1>
+      <div class="title-rule"><span></span><i>NIGHTFALL PROTOCOL</i><span></span></div>
+      <p class="menu-blurb">
+        Blacksite K-17 has gone dark. Hostile elements hold the compound and the
+        Warden is executing the evacuation order. Secure the courtyard, survive
+        five assault waves, and put him down.
+      </p>
+
+      <div class="menu-actions">
+        <button id="btn-play" class="btn btn-primary" aria-label="Play Now">
+          <span class="btn-index">01</span>
+          <span class="btn-label">DEPLOY</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <button id="btn-brief" class="btn"><span class="btn-index">02</span><span class="btn-label">BRIEFING</span><span class="btn-arrow">→</span></button>
+        <button id="btn-controls" class="btn"><span class="btn-index">03</span><span class="btn-label">CONTROLS</span><span class="btn-arrow">→</span></button>
+      </div>
+
+      <div class="menu-meta">
+        <div><label>OPERATOR</label><span>GHOST-07</span></div>
+        <div><label>LOCATION</label><span>K-17 / NORTH ATLANTIC</span></div>
+        <div><label>BEST SCORE</label><span id="best-score">—</span></div>
+      </div>
+    </main>
+
+    <div class="menu-side">
+      <div class="side-line"></div>
+      <div class="side-text">37°12'09"N<br>25°44'31"W</div>
+      <div class="side-line short"></div>
+      <div class="side-coord">LOCAL 02:14:07<br>WIND 14 KTS NW<br>VIS 1.2 KM / RAIN</div>
+      <div class="side-barcode" aria-hidden="true"></div>
+      <div class="side-foot">ASSET 04-117<br>BUILD 2.6.1</div>
+    </div>
+
+    <div class="menu-footer">
+      <span class="warn">▲ UNAUTHORIZED ACCESS IS A FEDERAL OFFENSE</span>
+      <span class="menu-hint">HEADPHONES RECOMMENDED</span>
+    </div>
+  </div>
+
+  <div id="briefing" class="screen modal-screen hidden">
+    <div class="panel wide-panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-kicker">MISSION BRIEF // K-17</div>
+          <h2>OPERATION <em>NIGHTFALL</em></h2>
+        </div>
+        <button class="x-btn" data-close="briefing" aria-label="Close briefing">✕</button>
+      </div>
+      <div class="brief-grid">
+        <div class="brief-col">
+          <h3>SITUATION</h3>
+          <p>At 23:40 local, Blacksite K-17 lost contact with Command. Satellite imagery confirms a private military force occupying the compound. Captured intel indicates a high-value commander — callsign <b>WARDEN</b> — is preparing to destroy the uplink and disappear.</p>
+          <p>Your team is the only asset in range. Insert alone. Hold the courtyard until the uplink completes its burst transmission, then eliminate the Warden before he can burn the site.</p>
+          <h3>RULES OF ENGAGEMENT</h3>
+          <p>Weapons free. No air support. No extraction until the package is secure.</p>
+        </div>
+        <div class="brief-col">
+          <h3>OBJECTIVES</h3>
+          <ol class="obj-list">
+            <li><span>01</span>Survive the first assault wave</li>
+            <li><span>02</span>Hold the courtyard through wave four</li>
+            <li><span>03</span>Eliminate the Warden</li>
+            <li><span>04</span>Secure the uplink</li>
+          </ol>
+          <div class="intel-strip">
+            <div><label>THREAT</label><b class="threat">SEVERE</b></div>
+            <div><label>WAVES</label><b>05</b></div>
+            <div><label>EXFIL</label><b>DAWN</b></div>
+          </div>
+          <p class="small-note">Vitals regenerate out of contact. Resupply occurs between waves. A sidearm with unlimited reserve is carried at all times.</p>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn btn-primary compact" data-close="briefing" id="brief-deploy" aria-label="Start Game"><span class="btn-label">BEGIN OPERATION</span><span class="btn-arrow">→</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls" class="screen modal-screen hidden">
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-kicker">OPERATOR MANUAL</div>
+          <h2>CONTROLS</h2>
+        </div>
+        <button class="x-btn" data-close="controls" aria-label="Close controls">✕</button>
+      </div>
+      <div class="control-grid">
+        <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>MOVE</span></div>
+        <div><kbd>MOUSE</kbd><span>AIM</span></div>
+        <div><kbd>LMB</kbd><span>FIRE</span></div>
+        <div><kbd>RMB</kbd><span>AIM DOWN SIGHT</span></div>
+        <div><kbd>R</kbd><span>RELOAD</span></div>
+        <div><kbd>SHIFT</kbd><span>SPRINT</span></div>
+        <div><kbd>SPACE</kbd><span>JUMP</span></div>
+        <div><kbd>C</kbd><span>CROUCH</span></div>
+        <div><kbd>1</kbd><kbd>2</kbd><span>SWITCH WEAPON</span></div>
+        <div><kbd>G</kbd><span>FRAG GRENADE</span></div>
+        <div><kbd>ESC</kbd><span>PAUSE</span></div>
+        <div><kbd>TAB</kbd><span>TACTICAL MAP</span></div>
+      </div>
+      <div class="panel-actions"><button class="btn compact" data-close="controls"><span class="btn-label">CLOSE</span></button></div>
+    </div>
+  </div>
+
+  <div id="hud" class="hud hidden" aria-live="off">
+    <div class="hud-corner tl"></div><div class="hud-corner tr"></div>
+    <div class="hud-corner bl"></div><div class="hud-corner br"></div>
+
+    <div class="hud-top-left">
+      <div class="mission-tag"><span class="mission-dot"></span> NIGHTFALL <em>// K-17</em></div>
+      <div class="radar-wrap">
+        <canvas id="radar" width="176" height="176"></canvas>
+        <div class="radar-ring"></div>
+        <div class="radar-label">TACTICAL</div>
+      </div>
+      <div id="objective" class="objective">SECURE THE COURTYARD</div>
+    </div>
+
+    <div class="hud-top-center">
+      <div id="wave-label" class="wave-label">WAVE <b>01</b> <span>/ 05</span></div>
+      <div class="wave-track"><div id="wave-progress"></div></div>
+      <div id="hostiles" class="hostiles">HOSTILES <b>04</b> REMAINING</div>
+      <div id="boss-bar" class="boss-bar hidden">
+        <div class="boss-name">WARDEN <span>// HEAVY ASSAULT</span></div>
+        <div class="boss-track"><div id="boss-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="hud-top-right">
+      <div class="score-block"><label>SCORE</label><span id="score">000000</span></div>
+      <div id="killfeed" class="killfeed"></div>
+    </div>
+
+    <div id="hitmarker" class="hitmarker"><i></i><i></i><i></i><i></i></div>
+    <div id="crosshair" class="crosshair"><i class="ch t"></i><i class="ch b"></i><i class="ch l"></i><i class="ch r"></i><b class="ch-dot"></b></div>
+    <div id="damage-arrows" class="damage-arrows"></div>
+    <div id="interact" class="interact"></div>
+
+    <div class="hud-bottom-left">
+      <div class="vitals-label">VITALS <span id="health-num">100</span></div>
+      <div class="health-track"><div id="health-fill"></div><div class="health-seg"></div></div>
+      <div class="equip-row">
+        <span class="equip-label">FRAG</span>
+        <div id="grenades" class="grenades"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="hud-bottom-right">
+      <div class="weapon-row">
+        <div class="weapon-name" id="weapon-name">VECTOR-7</div>
+        <div class="weapon-mode" id="weapon-mode">AUTO / 5.56</div>
+      </div>
+      <div class="ammo-row">
+        <span id="ammo-mag">30</span><span class="ammo-sep">/</span><span id="ammo-reserve">180</span>
+      </div>
+      <div class="reload-track"><div id="reload-fill"></div></div>
+      <div class="weapon-slots"><span class="slot active" id="slot-1">1 RIFLE</span><span class="slot" id="slot-2">2 P9</span></div>
+    </div>
+
+    <div id="hint" class="hint"></div>
+    <div id="wave-banner" class="wave-banner"></div>
+    <div id="notice" class="notice"></div>
+    <div id="subtitle" class="subtitle"></div>
+
+    <div class="hud-bottom-center">
+      <div class="compass" id="compass"><div class="compass-strip" id="compass-strip"></div></div>
+      <div class="compass-tick"></div>
+    </div>
+
+    <div id="damage-vignette" class="damage-vignette"></div>
+    <div id="low-health" class="low-health"></div>
+  </div>
+
+  <div id="pause" class="screen modal-screen hidden">
+    <div class="panel pause-panel">
+      <div class="panel-kicker">OPERATION SUSPENDED</div>
+      <h2>PAUSED</h2>
+      <div class="settings">
+        <label class="setting"><span>SENSITIVITY</span><input id="sens" type="range" min="0.35" max="2.5" step="0.05" value="1"><output id="sens-out">1.00</output></label>
+        <label class="setting"><span>MASTER AUDIO</span><input id="vol" type="range" min="0" max="1" step="0.05" value="0.8"><output id="vol-out">80%</output></label>
+        <label class="setting toggle"><span>INVERT LOOK</span><input id="invert" type="checkbox"><i></i></label>
+      </div>
+      <div class="panel-actions column">
+        <button id="btn-resume" class="btn btn-primary compact" aria-label="Resume"><span class="btn-label">RESUME</span><span class="btn-arrow">→</span></button>
+        <button id="btn-abort" class="btn compact"><span class="btn-label">ABORT MISSION</span></button>
+      </div>
+      <p class="small-note center">ESC to resume • pointer lock required for mouse aim</p>
+    </div>
+  </div>
+
+  <div id="gameover" class="screen modal-screen hidden">
+    <div class="panel result-panel">
+      <div id="result-kicker" class="panel-kicker">OPERATOR KIA</div>
+      <h2 id="result-title">MISSION FAILED</h2>
+      <p id="result-text" class="result-text">The courtyard was overrun. Blacksite K-17 is lost.</p>
+      <div class="stats">
+        <div><label>WAVES CLEARED</label><b id="stat-waves">0 / 5</b></div>
+        <div><label>ELIMINATIONS</label><b id="stat-kills">0</b></div>
+        <div><label>HEADSHOTS</label><b id="stat-heads">0</b></div>
+        <div><label>ACCURACY</label><b id="stat-acc">0%</b></div>
+        <div><label>TIME</label><b id="stat-time">00:00</b></div>
+        <div class="stat-score"><label>SCORE</label><b id="stat-score">0</b></div>
+      </div>
+      <div id="new-best" class="new-best hidden">◆ NEW PERSONAL BEST ◆</div>
+      <div class="panel-actions">
+        <button id="btn-redeploy" class="btn btn-primary compact" aria-label="Play Again"><span class="btn-label">REDEPLOY</span><span class="btn-arrow">→</span></button>
+        <button id="btn-menu" class="btn compact"><span class="btn-label">MAIN MENU</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="touch-controls" class="touch-controls hidden">
+    <div id="stick-zone" class="stick-zone"><div class="stick-base"><div id="stick-knob" class="stick-knob"></div></div></div>
+    <div id="look-zone" class="look-zone"></div>
+    <div class="touch-buttons">
+      <button id="t-fire" class="t-btn t-fire" aria-label="Fire">FIRE</button>
+      <button id="t-aim" class="t-btn t-aim" aria-label="Aim">AIM</button>
+      <button id="t-reload" class="t-btn t-small" aria-label="Reload">R</button>
+      <button id="t-jump" class="t-btn t-small" aria-label="Jump">JMP</button>
+      <button id="t-switch" class="t-btn t-small" aria-label="Switch weapon">SWP</button>
+      <button id="t-nade" class="t-btn t-small" aria-label="Grenade">G</button>
+    </div>
+    <div class="rotate-hint">ROTATE DEVICE FOR BEST EXPERIENCE</div>
+  </div>
+
+  <div id="rotate" class="screen rotate-screen hidden">
+    <div>
+      <div class="rotate-icon">▭</div>
+      <h2>ROTATE YOUR DEVICE</h2>
+      <p>NIGHTFALL is best played in landscape.</p>
+    </div>
+  </div>
+
+  <div id="gl-error" class="screen modal-screen hidden">
+    <div class="panel"><h2>RENDERER OFFLINE</h2><p>This device could not initialize WebGL2. Try a modern browser with hardware acceleration enabled.</p></div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
